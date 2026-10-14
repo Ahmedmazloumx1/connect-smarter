@@ -2,7 +2,7 @@
 
 Connect Smarter brings candidate profiles, CV skill analysis, interview preparation and employer application review into one Flutter application. Firebase Authentication and Firestore store accounts and structured data; a local FastAPI service extracts skills from uploaded CVs.
 
-Arabic setup: [ابدأ من هنا](docs/START_HERE_AR.md).
+Arabic setup: [Start here](docs/START_HERE_AR.md).
 
 Source repository: [Ahmedmazloumx1/connect-smarter](https://github.com/Ahmedmazloumx1/connect-smarter).
 
