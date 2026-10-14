@@ -1,0 +1,8 @@
+Demo Candidate
+Flutter Developer
+
+Built Flutter applications using Dart, Firebase Authentication and Firestore.
+Implemented Python FastAPI services, SQL data models, Git workflows and automated testing.
+Created accessible interfaces and collaborated with a development team.
+
+This is synthetic data for local portfolio demonstrations only.

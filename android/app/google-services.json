@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "552774756925",
+    "project_id": "connect-smarter-ahmed-2026",
+    "storage_bucket": "connect-smarter-ahmed-2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:552774756925:android:dce42e2ab4b0c454d35854",
+        "android_client_info": {
+          "package_name": "com.example.grad_project"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0mdncouUOfvThghmXstBuuAb_PigOows"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

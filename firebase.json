@@ -1,0 +1,55 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "connect-smarter-ahmed-2026",
+          "appId": "1:552774756925:android:dce42e2ab4b0c454d35854",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "connect-smarter-ahmed-2026",
+          "appId": "1:552774756925:ios:9cd14cbb106fcb7ed35854",
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "connect-smarter-ahmed-2026",
+          "configurations": {
+            "web": "1:552774756925:web:e4a28a77c846fdc6d35854",
+            "android": "1:552774756925:android:dce42e2ab4b0c454d35854",
+            "ios": "1:552774756925:ios:9cd14cbb106fcb7ed35854"
+          }
+        }
+      }
+    }
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4000
+    },
+    "singleProjectMode": true
+  },
+  "auth": {
+    "providers": {
+      "emailPassword": true,
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Connect Smarter",
+        "supportEmail": "ahmedbota168@gmail.com"
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function role(value) {
+      return signedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.userType == value;
+    }
+    function text(value, maxLength) {
+      return value is string && value.size() <= maxLength;
+    }
+    function optionalText(data, key, maxLength) {
+      return !(key in data) || text(data[key], maxLength);
+    }
+    function jobFields(data) {
+      return text(data.title, 200) && data.title.size() > 0
+        && data.skills is list && data.skills.size() <= 100
+        && data.isPublic is bool
+        && optionalText(data, 'company', 200)
+        && optionalText(data, 'location', 200)
+        && optionalText(data, 'description', 10000)
+        && optionalText(data, 'education', 200)
+        && (!('questions' in data) || (data.questions is list && data.questions.size() <= 20))
+        && (!('minExperience' in data) || (data.minExperience is number && data.minExperience >= 0 && data.minExperience <= 80))
+        && (!('isRemote' in data) || data.isRemote is bool)
+        && (!('isFullTime' in data) || data.isFullTime is bool);
+    }
+    function applicationFields(data) {
+      return text(data.jobId, 1500) && data.jobId.size() > 0
+        && text(data.jobTitle, 200) && data.jobTitle.size() > 0
+        && text(data.candidateName, 200) && data.candidateName.size() > 0
+        && text(data.email, 320)
+        && text(data.profile, 200)
+        && data.skills is list && data.skills.size() <= 100;
+    }
+    match /users/{uid} {
+      allow read, delete: if owner(uid);
+      allow create: if owner(uid) && request.resource.data.userType in ['job_seeker', 'company'];
+      allow update: if owner(uid)
+        && request.resource.data.userType in ['job_seeker', 'company']
+        && (request.resource.data.userType == resource.data.get('userType', '')
+          || !(resource.data.get('userType', '') in ['job_seeker', 'company']));
+    }
+    match /jobs/{id} {
+      allow read: if signedIn() && (resource.data.isPublic == true || owner(resource.data.ownerId));
+      allow create: if role('company') && owner(request.resource.data.ownerId)
+        && jobFields(request.resource.data);
+      allow update: if role('company') && owner(resource.data.ownerId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.isPublic is bool
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isPublic']);
+      allow delete: if owner(resource.data.ownerId);
+    }
+    match /interviews/{id} {
+      allow read, delete: if owner(resource.data.candidateId);
+      allow create: if role('job_seeker') && owner(request.resource.data.candidateId)
+        && request.resource.data.method == 'practice-keyword-coverage-v1';
+      allow update: if false;
+    }
+    match /applications/{id} {
+      // The deterministic id permits an applicant to check a missing document in a transaction.
+      allow get: if signedIn() && (id.matches('.*_' + request.auth.uid) || owner(resource.data.employerId));
+      allow list: if owner(resource.data.candidateId) || owner(resource.data.employerId);
+      allow create: if role('job_seeker') && owner(request.resource.data.candidateId)
+        && id == request.resource.data.jobId + '_' + request.auth.uid
+        && request.resource.data.status == 'submitted'
+        && request.resource.data.keys().hasOnly(['candidateId','employerId','jobId','jobTitle','candidateName','email','profile','skills','status','createdAt'])
+        && applicationFields(request.resource.data)
+        && get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.isPublic == true
+        && get(/databases/$(database)/documents/jobs/$(request.resource.data.jobId)).data.ownerId == request.resource.data.employerId;
+      allow update: if owner(resource.data.employerId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['submitted','shortlisted','rejected'];
+      allow delete: if owner(resource.data.candidateId) || owner(resource.data.employerId);
+    }
+    match /notifications/{id} {
+      allow read, delete: if owner(resource.data.recipientId);
+      allow update: if owner(resource.data.recipientId)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isRead']);
+      allow create: if false;
+    }
+  }
+}
